@@ -2,7 +2,10 @@ module tinder-match
 
 go 1.22.3
 
-require github.com/gin-gonic/gin v1.10.0
+require (
+	github.com/emirpasic/gods/v2 v2.0.0-alpha
+	github.com/gin-gonic/gin v1.10.0
+)
 
 require (
 	github.com/bytedance/sonic v1.11.6 // indirect

@@ -13,3 +13,14 @@ type Person struct {
 	Gender      Gender
 	WantedDates int
 }
+
+func (p Person) Key() int {
+	switch p.Gender {
+	case GenderMale:
+		return p.Height
+	case GenderFemale:
+		return -p.Height
+	default:
+		return 0
+	}
+}
