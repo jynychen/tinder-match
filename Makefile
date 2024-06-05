@@ -13,6 +13,10 @@ lint:
 	golangci-lint run
 
 
+.PHONY: docs
+docs:
+	swag init -g cmd/server/main.go --pd -o docs/api
+
 .PHONY: build-bin
 build-bin:
 	go build -o bin/server cmd/server/main.go
