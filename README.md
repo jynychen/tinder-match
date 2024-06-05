@@ -38,6 +38,8 @@ $ make run-docker
 ```
 ├── cmd
 │   └── server      # server entry point
+├── docs
+│   └── api         # API documentation
 ├── internal        # sub-folder no need to export
 │   ├── config      # config package
 │   ├── controller  # controller/handler package
@@ -52,6 +54,41 @@ $ make run-docker
 ```
 
 ## API Documentation
+for more detail, you can
+find the API documentation in [`docs/api`](https://github.com/jynychen/tinder-match/tree/main/docs/api) folder
+
+* AddSinglePersonAndMatch
+    - add a new user and find any possible matches
+    - POST /api/v1/people
+    - Request
+    ```
+    {
+        "name": "string",
+        "height": 0,
+        "gender": "string",
+        "wantedDates": 0
+    }
+    ```
+    - Response
+    ```
+    {
+       "matched": [ ... ]
+    }
+    ```
+
+* RemoveSinglePerson
+    - Remove a user from the matching system
+    - DELETE /api/v1/people/:id
+
+* QuerySinglePeople
+    -  Query a list of users from the matching system
+    - GET /api/v1/people?limit=0
+    - Response
+    ```
+    {
+        "people": [ ... ]
+    }
+    ```
 
 
 ## TBD/TODO
@@ -66,3 +103,4 @@ $ make run-docker
 - [x] golangci-lint pass
 - [x] k6 load test script
 - [x] containerize with docker
+- [x] API documentation
