@@ -92,6 +92,16 @@ find the API documentation in [`docs/api`](https://github.com/jynychen/tinder-ma
 
 
 ## TBD/TODO
+- [ ] event driven archt. with mq/channel for async processing
+- [ ] add user first and matching later for API quick response
+- [ ] lock free data structure for concurrent access
+- [ ] refactor red black tree to support same key nodes
+- [ ] log matching process for validation and failover recovery
+- [ ] persist data store for data recovery
+- [ ] add unit test / mock for service
+- [ ] add integration test for API
+- [ ] level log for different log level
+- [ ] debug/release build
 
 
 ## Done
