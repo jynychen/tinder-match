@@ -29,9 +29,86 @@ $ make run-docker
 ```
 
 ## System Design
+### Architecture
+```mermaid
+graph TD
+subgraph "Server"
+    R[RESTful API] --> S[Matching Service]
+    S --> H[Hash Map<br>Additional Info]
+    S --> T[Red-Black Tree]
+    subgraph "In-Memory"
+        H[Hash Map <br> name:key]
+        T["Red-Black Tree <br> key:person[]"]
+    end
+end
+```
+
+* **RESTful API**: The server exposes RESTful API for the client to interact with the matching system.
+* **Matching Service**: The service layer is responsible for handling the business logic of the matching rule.
+* **Hash Map**: The Hash Map is used to store `person.Name` to `person.Key` mapping for quick access.
+* **Red-Black Tree**k: The Red-Black Tree is used to store person metadata for matching. The tree is sorted by person.Height.
+
+### Algorithm
+As Red-Black Tree is self-balancing binary search tree,
+it provides O(log n) time complexity for search, insert, and delete operations.
+The tree is sorted by person.Height, so we can find the possible match by searching the tree with the `Height` efficiency.
+
+In the matching service, we use the following algorithm to store and match the person:
+
+About `perons.Key()`:    
+if the `person.Gender` is `male`, we store the person in the tree with the `Height` as the key.    
+if the `person.Gender` is `female`, we store with the **negative** `Height` as the key.    
+
+With the matching rule:     
+"boys can only match girls who have lower height"
+
+This design make the matching become to:    
+- search the first node that larger then negative of `Person.Height`    
+
+which is the same as:    
+- `person.Key() + matchCandidate.Key() > 0`
+
+But this design has a limitation
+that system can **not support negative height** person witch is not a real case.
+
+#### * AddSinglePersonAndMatch:
+Add a new user to the matching system and find any possible matches for the new user.
+- Match the person with the possible candidate by the matching rule.
+- If the person has matched, decrease the wanted dates of the person and the matched candidate.
+- If the person has more than 0 wanted dates, add the person to RBtree and hashmap.
+- Return the matched candidates.
+
+#### * RemoveSinglePerson:
+Remove a user from the matching system so that the user cannot be matched anymore.
+- Remove the person from the store both in RBtree and hashmap.
+
+#### * QuerySinglePeople:
+Find the most N possible matched single people, where N is a request parameter.
+if the "possible matched" means new person came in and the person can be matched with the new person.
+- Find largest key from the RBtree (highest male)
+- Find the largest key from the RBtree that < 0 (shortest female)
+- Find just smaller key from the RBtree for the above two
+- repeat the above steps until we get N people
+
+Some other meaning of "possible matched" should be considered:
+- in the existing system, the person can be matched with other people
+- in large matched scenario, system only left tell female and short male,
+so the possible matched may be between them.
 
 
-## Complexity Analysis
+### Complexity Analysis
+#### * AddSinglePersonAndMatch:
+- Time Complexity: O(m + log n)
+- m is the number of matched candidates
+- n is the number of people in the system
+
+#### * RemoveSinglePerson:
+- Time Complexity: O(log n)
+
+#### * QuerySinglePeople:
+- Time Complexity: O(m + log n)
+- m is number of people to query
+- n is the number of people in the system 
 
 
 ## file structure
