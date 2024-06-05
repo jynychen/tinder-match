@@ -1,0 +1,161 @@
+definitions:
+  gin.Error:
+    properties:
+      err: {}
+      meta: {}
+      type:
+        $ref: '#/definitions/gin.ErrorType'
+    type: object
+  gin.ErrorType:
+    enum:
+    - -9223372036854775808
+    - 4611686018427387904
+    - 1
+    - 2
+    - -1
+    type: integer
+    x-enum-varnames:
+    - ErrorTypeBind
+    - ErrorTypeRender
+    - ErrorTypePrivate
+    - ErrorTypePublic
+    - ErrorTypeAny
+  model.Gender:
+    enum:
+    - male
+    - female
+    type: string
+    x-enum-varnames:
+    - GenderMale
+    - GenderFemale
+  tinder-match_internal_controller_dto.AddSinglePersonAndMatchRequest:
+    properties:
+      gender:
+        $ref: '#/definitions/model.Gender'
+      height:
+        type: integer
+      name:
+        type: string
+      wanted_dates:
+        type: integer
+    type: object
+  tinder-match_internal_controller_dto.AddSinglePersonAndMatchResponse:
+    properties:
+      matched:
+        items:
+          $ref: '#/definitions/tinder-match_internal_controller_dto.Person'
+        type: array
+    type: object
+  tinder-match_internal_controller_dto.Person:
+    properties:
+      gender:
+        $ref: '#/definitions/model.Gender'
+      height:
+        type: integer
+      name:
+        type: string
+      wanted_dates:
+        type: integer
+    type: object
+  tinder-match_internal_controller_dto.QuerySinglePeopleResponse:
+    properties:
+      people:
+        items:
+          $ref: '#/definitions/tinder-match_internal_controller_dto.Person'
+        type: array
+    type: object
+  tinder-match_internal_controller_dto.RemoveSinglePersonResponse:
+    type: object
+info:
+  contact: {}
+  description: server for the Tinder matching system
+  title: tinder-match
+  version: "1.0"
+paths:
+  /api/v1/person:
+    get:
+      description: Find the most N possible matched single people, where N is a request
+        parameter
+      operationId: QuerySinglePeople
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tinder-match_internal_controller_dto.QuerySinglePeopleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.Error'
+      summary: Query a list of users from the matching system
+    post:
+      consumes:
+      - application/json
+      description: Add a new user to the matching system and find any possible matches
+        for the new user
+      operationId: AddSinglePersonAndMatch
+      parameters:
+      - description: person
+        in: body
+        name: person
+        required: true
+        schema:
+          $ref: '#/definitions/tinder-match_internal_controller_dto.AddSinglePersonAndMatchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tinder-match_internal_controller_dto.AddSinglePersonAndMatchResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.Error'
+      summary: add a new user and find any possible matches
+  /api/v1/person/{name}:
+    delete:
+      description: Remove a user from the matching system so that the user cannot
+        be matched anymore
+      operationId: RemoveSinglePerson
+      parameters:
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tinder-match_internal_controller_dto.RemoveSinglePersonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.Error'
+      summary: Remove a user from the matching system
+swagger: "2.0"
